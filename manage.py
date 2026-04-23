@@ -3,6 +3,8 @@
 import os
 import sys
 
+os.environ['DJANGO_COLORS'] = 'nocolor'
+
 
 def main():
     """Run administrative tasks."""
