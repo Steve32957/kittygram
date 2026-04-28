@@ -1,41 +1,29 @@
-# Обновлённый views.py
-from rest_framework import generics
+# views.py
+from rest_framework import viewsets
 
 from .models import Cat
 from .serializers import CatSerializer
 
 
-# высокоуровневые view-классы
-class CatList(generics.ListCreateAPIView):
+class CatViewSet(viewsets.ModelViewSet):
     queryset = Cat.objects.all()
     serializer_class = CatSerializer
 
 
-class CatDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Cat.objects.all()
-    serializer_class = CatSerializer
+# Если бы пользователи могли оставлять комментарии к котикам,
+# то эндпоинт для работы с комментариями выглядел бы примерно так:
+# cats/{cat_id}/comments/
 
-# Обновлённый views.py
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-# from rest_framework import status
-
-# from .models import Cat
-# from .serializers import CatSerializer
-
-
-# низкоуровневый view-класс
-# class APICat(APIView):
-#     def get(self, request):
-#         cats = Cat.objects.all()
-#         serializer = CatSerializer(cats, many=True)
-#         return Response(serializer.data)
-
-#     def post(self, request):
-#         serializer = CatSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(
-#                   serializer.errors, status=status.HTTP_400_BAD_REQUEST
-# )
+# class CommentViewSet(viewsets.ModelViewSet):
+#     serializer_class = CommentSerializer
+# queryset во вьюсете не указываем
+# Нам тут нужны не все комментарии, а только связанные с котом с id=cat_id
+# Поэтому нужно переопределить метод get_queryset и применить фильтр
+#     def get_queryset(self):
+#         # Получаем id котика из эндпоинта
+#         cat_id = self.kwargs.get("cat_id")
+#         # И отбираем только нужные комментарии
+#         new_queryset = Comment.objects.filter(cat=cat_id)
+#         return new_queryset
+# в таком случае создаем basename, name автоматически не получиться
+# router.register('cats', CatViewSet, basename='kitty')
